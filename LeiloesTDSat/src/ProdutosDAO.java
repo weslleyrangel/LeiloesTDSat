@@ -23,26 +23,39 @@ public class ProdutosDAO {
     ArrayList<ProdutosDTO> listaProdutosVendidos = new ArrayList<>();
 
     public void cadastrarProduto(ProdutosDTO produto) {
-
-        String sql = "INSERT INTO produtos (nome, valor, status) values (?,?,?)";
-
+    // Validações adicionais de segurança
+    if (produto == null) {
+        JOptionPane.showMessageDialog(null, "Produto não pode ser nulo", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    String sql = "INSERT INTO produtos (nome, valor, status) values (?,?,?)";
+    Connection conn = null;
+    PreparedStatement prep = null;
+    
+    try {
         conn = new conectaDAO().connectDB();
+        prep = conn.prepareStatement(sql);
+        prep.setString(1, produto.getNome());
+        prep.setDouble(2, produto.getValor());
+        prep.setString(3, produto.getStatus());
 
+        prep.executeUpdate();
+        
+        JOptionPane.showMessageDialog(null, "Produto inserido com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Erro no banco de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        // Fechar recursos
         try {
-            prep = conn.prepareStatement(sql);
-            prep.setString(1, produto.getNome());
-            prep.setDouble(2, produto.getValor());
-            prep.setString(3, produto.getStatus());
-
-            prep.executeUpdate();
-            prep.close();
-
-            JOptionPane.showMessageDialog(null, "Produto inserido com sucesso");
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro na ProdutosDAO " + e.getMessage());
+            if (prep != null) prep.close();
+            if (conn != null) conn.close();
+        } catch (SQLException ex) {
+            System.err.println("Erro ao fechar conexão: " + ex.getMessage());
         }
     }
+}
 
     public ArrayList<ProdutosDTO> listarProdutos() {
 

@@ -1,3 +1,6 @@
+
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -140,22 +143,50 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
-        String status = "A Venda";
-        produto.setNome(nome);
-        produto.setValor(Integer.parseInt(valor));
-        produto.setStatus(status);
-        
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
-        
+        try {
+            String nome = cadastroNome.getText().trim();
+            String valorText = cadastroValor.getText().trim();
+            
+            
+            if (nome.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "O nome do produto não pode estar vazio", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            
+            int valor;
+            try {
+            double valorDouble = Double.parseDouble(valorText);
+            if (valorDouble <= 0) {
+                JOptionPane.showMessageDialog(this, "O valor deve ser maior que zero", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            valor = (int) Math.round(valorDouble); // Converte para int arredondando
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Valor inválido. Digite apenas números", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            ProdutosDTO produto = new ProdutosDTO();
+            produto.setNome(nome);
+            produto.setValor(valor);
+            produto.setStatus("À Venda"); 
+            
+            ProdutosDAO produtosDAO = new ProdutosDAO();
+            produtosDAO.cadastrarProduto(produto);
+            
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar produto: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed
         listagemVIEW listagem = new listagemVIEW(); 
         listagem.setVisible(true);
+        this.dispose(); //
     }//GEN-LAST:event_btnProdutosActionPerformed
 
     /**
