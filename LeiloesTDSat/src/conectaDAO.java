@@ -2,7 +2,6 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import javax.swing.JOptionPane;
 
 
 
@@ -17,15 +16,19 @@ import javax.swing.JOptionPane;
  */
 public class conectaDAO {
     
-    public Connection connectDB(){
+    private static final String url = "jdbc:mysql://localhost:3306/leiloestdsat";
+    private static final String user = "root";
+    private static final String senha = "root";
+
+    public Connection connectDB() {
         Connection conn = null;
-        
+
         try {
-        
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/uc11?user=root&password=");
-            
-        } catch (SQLException erro){
-            JOptionPane.showMessageDialog(null, "Erro ConectaDAO" + erro.getMessage());
+            conn = DriverManager.getConnection(url, user, senha);
+
+        } catch (SQLException e) {
+            System.out.println("Falha na conexaoDao " + e.getMessage());
+
         }
         return conn;
     }
