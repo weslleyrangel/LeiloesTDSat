@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class conectaDAO {
     
-    private static final String url = "jdbc:mysql://localhost:3306/leiloestdsat";
+    private static final String url = "jdbc:mysql://localhost:3306/leiloestdsat?useSSL=false";
     private static final String user = "root";
     private static final String senha = "root";
 

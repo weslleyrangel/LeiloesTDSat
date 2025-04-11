@@ -1,5 +1,10 @@
 
+import java.awt.Color;
+import java.awt.Component;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -168,25 +173,52 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    private void listarProdutos(){
-        try {
-            ProdutosDAO produtosdao = new ProdutosDAO();
-            
-            DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
-            model.setNumRows(0);
-            
-            ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-            
-            for(int i = 0; i < listagem.size(); i++){
-                model.addRow(new Object[]{
-                    listagem.get(i).getId(),
-                    listagem.get(i).getNome(),
-                    listagem.get(i).getValor(),
-                    listagem.get(i).getStatus()
-                });
+ private void listarProdutos() {
+    try {
+        ProdutosDAO produtosdao = new ProdutosDAO();
+        DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+        model.setNumRows(0);
+        
+        ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
+               
+        listaProdutos.setDefaultRenderer(Object.class, null);
+        
+        listaProdutos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, 
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                               
+                String status = table.getModel().getValueAt(row, 3).toString().trim();
+                
+                if (!isSelected) {
+                    if (status.equalsIgnoreCase("Vendido")) {
+                        c.setBackground(new Color(255, 200, 200)); 
+                    } else {
+                        c.setBackground(new Color(200, 255, 200)); 
+                    }
+                } else {
+                    c.setBackground(table.getSelectionBackground());
+                }
+                
+                return c;
             }
-        } catch (Exception e) {
+        });
+        
+            for (ProdutosDTO produto : listagem) {
+            model.addRow(new Object[]{
+                produto.getId(),
+                produto.getNome(),
+                produto.getValor(),
+                produto.getStatus()
+            });
         }
-    
+        
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao listar produtos: " + e.getMessage(),
+            "Erro", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
+}
 }
